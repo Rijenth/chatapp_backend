@@ -1,7 +1,7 @@
 package com.discord.api.spring_boot_starter_parent.api.controllers;
 
 import com.discord.api.spring_boot_starter_parent.api.models.User;
-import com.discord.api.spring_boot_starter_parent.api.request.ContactRequest;
+import com.discord.api.spring_boot_starter_parent.api.request.CreateContactRequest;
 import com.discord.api.spring_boot_starter_parent.api.services.User.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ public class UserContactController {
     @PostMapping
     public ResponseEntity<Void> addContact(
             @PathVariable Long userId,
-            @RequestBody ContactRequest request
+            @RequestBody CreateContactRequest request
     ) {
         userService.addContact(userId, request.getContactId());
         return ResponseEntity.status(HttpStatus.CREATED).build();
