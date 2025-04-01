@@ -5,6 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ContactRequest {
+public class CreateContactRequest {
     private Long contactId;
 }
