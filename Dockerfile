@@ -1,8 +1,9 @@
 FROM eclipse-temurin:21
 
-RUN apt-get update && apt-get -y upgrade
-
-RUN apt-get install -y inotify-tools dos2unix
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    inotify-tools \
+    dos2unix \
+ && rm -rf /var/lib/apt/lists/*
 
 ENV HOME=/app
 

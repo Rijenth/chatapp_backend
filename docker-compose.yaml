@@ -26,7 +26,6 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-    image: api
     ports:
       - 8000:8000
       - 35729:35729
