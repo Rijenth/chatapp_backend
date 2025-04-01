@@ -48,7 +48,7 @@ public class User extends Model{
             inverseJoinColumns={@JoinColumn(name="CONVERSATION_ID", referencedColumnName="ID")}
     )
     @JsonIgnoreProperties(value = {"participants", "messages"})
-    private List<Conversation> conversations = new ArrayList<Conversation>();
+    private List<Conversation> conversations = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -57,6 +57,6 @@ public class User extends Model{
             inverseJoinColumns = @JoinColumn(name = "contact_id")
     )
     @JsonIgnore
-    private List<User> contacts = new ArrayList<User>();
+    private List<User> contacts = new ArrayList<>();
 
 }
