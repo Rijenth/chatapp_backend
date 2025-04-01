@@ -15,11 +15,11 @@ INSERT INTO roles (name) VALUES ('USER');
 
 -- Insertion des utilisateurs avec leur mot de passe en clair
 INSERT INTO users (username, password) VALUES
-                                           ('demoUser', 'password123'),
-                                           ('use001', 'password123'),
-                                           ('use002', 'password123'),
-                                           ('use003', 'password123'),
-                                           ('use004', 'password123');
+                                           ('demoUser', '$2a$10$DG./Bxi8VHPrlrJZkZNONu/t5f5KLj3EJucPkJswjEn63myP5k3KS'),
+                                           ('use001', '$2a$10$DG./Bxi8VHPrlrJZkZNONu/t5f5KLj3EJucPkJswjEn63myP5k3KS'),
+                                           ('use002', '$2a$10$DG./Bxi8VHPrlrJZkZNONu/t5f5KLj3EJucPkJswjEn63myP5k3KS'),
+                                           ('use003', '$2a$10$DG./Bxi8VHPrlrJZkZNONu/t5f5KLj3EJucPkJswjEn63myP5k3KS'),
+                                           ('use004', '$2a$10$DG./Bxi8VHPrlrJZkZNONu/t5f5KLj3EJucPkJswjEn63myP5k3KS');
 
 -- Attribution du rôle USER aux utilisateurs
 INSERT INTO users_roles (user_id, role_id)
@@ -97,3 +97,6 @@ INSERT INTO messages (content, conversation_id, created_at, user_id, username) V
                                                                                    ('Bonne idée !', 3, NOW(), (SELECT id FROM users WHERE username = 'use003'), 'use003'),
                                                                                    ('Quel est ton plat préféré ?', 4, NOW(), (SELECT id FROM users WHERE username = 'demoUser'), 'demoUser'),
                                                                                    ('Les pâtes carbonara !', 4, NOW(), (SELECT id FROM users WHERE username = 'use004'), 'use004');
+
+-- Insertion des autres roles
+INSERT INTO roles (name) VALUES ('MODERATOR'), ('ADMIN');
