@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -72,11 +71,26 @@ public class AuthController {
             final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
             final String jwt = jwtUtil.generateToken(userDetails.getUsername());
             logger.debug("JWT Token generated for user: {}", authenticationRequest.getUsername());
+
+            User user = userRepository.findByUsername(authenticationRequest.getUsername())
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            user.setIsOnline(true);
+            userRepository.save(user);
+
             return ResponseEntity.ok(new AuthenticationResponse(jwt));
         } catch (Exception e) {
             logger.error("Erreur interne du serveur : {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur interne du serveur");
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestBody AuthenticationRequest authenticationRequest) {
+        User user = userRepository.findByUsername(authenticationRequest.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        user.setIsOnline(false);
+        userRepository.save(user);
+        return ResponseEntity.ok("Déconnexion réussie !");
     }
 
     @GetMapping("/hello")

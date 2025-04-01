@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,9 @@ public class User extends Model{
 
     @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private Boolean isOnline;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @OnDelete(action = OnDeleteAction.CASCADE)

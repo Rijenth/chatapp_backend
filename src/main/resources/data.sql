@@ -14,12 +14,12 @@ DELETE FROM roles WHERE name = 'USER';
 INSERT INTO roles (name) VALUES ('USER');
 
 -- Insertion des utilisateurs avec leur mot de passe en clair
-INSERT INTO users (username, password) VALUES
-                                           ('demoUser', '$2a$10$DG./Bxi8VHPrlrJZkZNONu/t5f5KLj3EJucPkJswjEn63myP5k3KS'),
-                                           ('use001', '$2a$10$DG./Bxi8VHPrlrJZkZNONu/t5f5KLj3EJucPkJswjEn63myP5k3KS'),
-                                           ('use002', '$2a$10$DG./Bxi8VHPrlrJZkZNONu/t5f5KLj3EJucPkJswjEn63myP5k3KS'),
-                                           ('use003', '$2a$10$DG./Bxi8VHPrlrJZkZNONu/t5f5KLj3EJucPkJswjEn63myP5k3KS'),
-                                           ('use004', '$2a$10$DG./Bxi8VHPrlrJZkZNONu/t5f5KLj3EJucPkJswjEn63myP5k3KS');
+INSERT INTO users (username, password, is_online) VALUES
+                                           ('demoUser', '$2a$10$DG./Bxi8VHPrlrJZkZNONu/t5f5KLj3EJucPkJswjEn63myP5k3KS', false),
+                                           ('use001', '$2a$10$DG./Bxi8VHPrlrJZkZNONu/t5f5KLj3EJucPkJswjEn63myP5k3KS', false),
+                                           ('use002', '$2a$10$DG./Bxi8VHPrlrJZkZNONu/t5f5KLj3EJucPkJswjEn63myP5k3KS', false),
+                                           ('use003', '$2a$10$DG./Bxi8VHPrlrJZkZNONu/t5f5KLj3EJucPkJswjEn63myP5k3KS', false),
+                                           ('use004', '$2a$10$DG./Bxi8VHPrlrJZkZNONu/t5f5KLj3EJucPkJswjEn63myP5k3KS', false);
 
 -- Attribution du rôle USER aux utilisateurs
 INSERT INTO users_roles (user_id, role_id)
