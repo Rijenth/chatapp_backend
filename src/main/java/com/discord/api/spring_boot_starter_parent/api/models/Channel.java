@@ -23,6 +23,9 @@ public class Channel extends Model {
     @OneToMany(mappedBy = "channel")
     private List<Message> messages;
 
+    @OneToMany(mappedBy = "channel")
+    private List<ChannelRole> channelRoles;
+
     public List<Message> messages() {
         return messages;
     }

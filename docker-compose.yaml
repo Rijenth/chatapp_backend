@@ -5,7 +5,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: discord-db
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 3s
       retries: 10
     image: mysql:latest
@@ -13,7 +13,7 @@ services:
       - "3306:3306"
     restart: always
     volumes:
-      - ./database:/docker-entrypoint-initdb.d/:ro
+      - ./database:/docker-entrypoint-initdb.d/
     networks:
       - spring-boot-network
 
@@ -36,6 +36,24 @@ services:
     working_dir: /app
     networks:
       - spring-boot-network
+
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    restart: always
+    ports:
+      - 8080:80
+    depends_on:
+      - mysql
+    networks:
+      - spring-boot-network
+    volumes:
+      - ./docker/phpmyadmin:/var/lib/phpmyadmin 
 
 networks:
   spring-boot-network:
