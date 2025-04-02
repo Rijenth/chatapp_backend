@@ -80,23 +80,30 @@ INSERT INTO messages (user_id, content, username, created_at) VALUES
                                                                   ((SELECT id FROM users WHERE username = 'use004'), 'Comment s est passée ta journée ?', 'use004', NOW());
 
 -- CHANNEL MESSAGES --
-INSERT INTO messages (channel_id, content, created_at, user_id, username) VALUES
-                                                                              (1, 'Bienvenue sur Channel001', NOW(), (SELECT id FROM users WHERE username = 'demoUser'), 'demoUser'),
-                                                                              (2, 'Bienvenue sur Channel002', NOW(), (SELECT id FROM users WHERE username = 'use001'), 'use001'),
-                                                                              (3, 'Bienvenue sur Channel003', NOW(), (SELECT id FROM users WHERE username = 'use002'), 'use002'),
-                                                                              (4, 'Bienvenue sur Channel004', NOW(), (SELECT id FROM users WHERE username = 'use003'), 'use003'),
-                                                                              (5, 'Bienvenue sur Channel005', NOW(), (SELECT id FROM users WHERE username = 'use004'), 'use004');
+INSERT INTO messages (content, channel_id, created_at, user_id, username) VALUES
+-- Channel 1 : demoUser & use001
+('Bonjour tout le monde sur Channel001', 1, NOW(), (SELECT id FROM users WHERE username = 'demoUser'), 'demoUser'),
+('Salut a tous, content d etre ici', 1, NOW(), (SELECT id FROM users WHERE username = 'use001'), 'use001'),
+('Quelqu un veut coder ce soir', 1, NOW(), (SELECT id FROM users WHERE username = 'demoUser'), 'demoUser'),
+('Oui je suis partant', 1, NOW(), (SELECT id FROM users WHERE username = 'use001'), 'use001'),
 
--- CONVERSATION MESSAGES --
-INSERT INTO messages (content, conversation_id, created_at, user_id, username) VALUES
-                                                                                   ('Salut, comment ça va ?', 1, NOW(), (SELECT id FROM users WHERE username = 'demoUser'), 'demoUser'),
-                                                                                   ('Très bien et toi ?', 1, NOW(), (SELECT id FROM users WHERE username = 'use001'), 'use001'),
-                                                                                   ('On se voit ce soir ?', 2, NOW(), (SELECT id FROM users WHERE username = 'demoUser'), 'demoUser'),
-                                                                                   ('Oui, avec plaisir !', 2, NOW(), (SELECT id FROM users WHERE username = 'use002'), 'use002'),
-                                                                                   ('Tu veux sortir ce week-end ?', 3, NOW(), (SELECT id FROM users WHERE username = 'demoUser'), 'demoUser'),
-                                                                                   ('Bonne idée !', 3, NOW(), (SELECT id FROM users WHERE username = 'use003'), 'use003'),
-                                                                                   ('Quel est ton plat préféré ?', 4, NOW(), (SELECT id FROM users WHERE username = 'demoUser'), 'demoUser'),
-                                                                                   ('Les pâtes carbonara !', 4, NOW(), (SELECT id FROM users WHERE username = 'use004'), 'use004');
+-- Channel 2 : demoUser & use002
+('Bienvenue sur Channel002', 2, NOW(), (SELECT id FROM users WHERE username = 'demoUser'), 'demoUser'),
+('Merci pour l ajout', 2, NOW(), (SELECT id FROM users WHERE username = 'use002'), 'use002'),
+('Tu utilises Avalonia aussi', 2, NOW(), (SELECT id FROM users WHERE username = 'demoUser'), 'demoUser'),
+('Oui je travaille dessus en ce moment', 2, NOW(), (SELECT id FROM users WHERE username = 'use002'), 'use002'),
+
+-- Channel 3 : demoUser & use003
+('Hello tout le monde sur Channel003', 3, NOW(), (SELECT id FROM users WHERE username = 'demoUser'), 'demoUser'),
+('Bonjour a tous', 3, NOW(), (SELECT id FROM users WHERE username = 'use003'), 'use003'),
+('Vous travaillez sur quoi', 3, NOW(), (SELECT id FROM users WHERE username = 'demoUser'), 'demoUser'),
+('Je suis sur une interface de chat', 3, NOW(), (SELECT id FROM users WHERE username = 'use003'), 'use003'),
+
+-- Channel 4 : demoUser & use004
+('Channel004 est lance', 4, NOW(), (SELECT id FROM users WHERE username = 'demoUser'), 'demoUser'),
+('Parfait je suis la', 4, NOW(), (SELECT id FROM users WHERE username = 'use004'), 'use004'),
+('On commence par quoi', 4, NOW(), (SELECT id FROM users WHERE username = 'demoUser'), 'demoUser'),
+('Par les composants principaux', 4, NOW(), (SELECT id FROM users WHERE username = 'use004'), 'use004');
 
 -- Insertion des autres roles
 INSERT INTO roles (name) VALUES ('MODERATOR'), ('ADMIN');
