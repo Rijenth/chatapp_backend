@@ -16,18 +16,19 @@ public class UserService {
     }
 
     @Transactional
-    public void addContact(Long userId, Long contactId) {
+    public void addContact(Long userId, String username) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        User contact = userRepository.findById(contactId)
+
+        User contact = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Contact not found"));
 
-        if (userId.equals(contactId)) {
+        if (user.getId().equals(contact.getId())) {
             throw new IllegalArgumentException("Cannot add yourself as a contact");
         }
 
         boolean isAlreadyContact = user.getContacts().stream()
-                .anyMatch(c -> c.getId().equals(contactId));
+                .anyMatch(c -> c.getId().equals(contact.getId()));
         if (!isAlreadyContact) {
             user.getContacts().add(contact);
             userRepository.save(user);
@@ -55,7 +56,7 @@ public class UserService {
     public void removeContact(Long userId, Long contactId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        User contact = userRepository.findById(contactId)
+        userRepository.findById(contactId)
                 .orElseThrow(() -> new RuntimeException("Contact not found"));
 
         user.getContacts().removeIf(c -> c.getId().equals(contactId));

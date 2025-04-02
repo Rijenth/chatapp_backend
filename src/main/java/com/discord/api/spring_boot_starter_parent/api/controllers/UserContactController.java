@@ -23,7 +23,7 @@ public class UserContactController {
             @PathVariable Long userId,
             @RequestBody CreateContactRequest request
     ) {
-        userService.addContact(userId, request.getContactId());
+        userService.addContact(userId, request.getUsername());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
