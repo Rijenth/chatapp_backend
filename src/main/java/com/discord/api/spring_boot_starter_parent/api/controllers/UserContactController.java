@@ -62,4 +62,17 @@ public class UserContactController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
+    @GetMapping("/random")
+    public ResponseEntity<List<User>> getRandomNonContacts(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "5") int count
+    ) {
+        try {
+            List<User> randomUsers = userService.getRandomNonContacts(userId, count);
+            return ResponseEntity.ok(randomUsers);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
