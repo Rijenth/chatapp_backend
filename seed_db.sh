@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Utiliser la commande suivante : docker exec -i mysql mysql -uroot -proot discord-db < database/data.sql
+
 # Configuration de la base de données
 DB_HOST="localhost"
 DB_PORT="3306"
