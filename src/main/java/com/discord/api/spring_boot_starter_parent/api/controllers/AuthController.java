@@ -47,6 +47,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("L'utilisateur existe déjà !");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setIsOnline(false);
         userRepository.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body("Utilisateur enregistré avec succès !");
     }
