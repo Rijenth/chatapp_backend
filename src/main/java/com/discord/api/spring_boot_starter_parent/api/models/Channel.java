@@ -1,5 +1,6 @@
 package com.discord.api.spring_boot_starter_parent.api.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -23,6 +24,7 @@ public class Channel extends Model {
     @OneToMany(mappedBy = "channel")
     private List<Message> messages;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "channel")
     private List<ChannelRole> channelRoles;
 
