@@ -2,10 +2,13 @@ package com.discord.api.spring_boot_starter_parent.api.services.User;
 
 import com.discord.api.spring_boot_starter_parent.api.models.User;
 import com.discord.api.spring_boot_starter_parent.api.repositories.UserRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -61,5 +64,37 @@ public class UserService {
 
         user.getContacts().removeIf(c -> c.getId().equals(contactId));
         userRepository.save(user);
+    }
+
+    public List<User> getRandomNonContacts(Long userId, int count) {
+        // Récupérer l'utilisateur et ses contacts
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        List<Long> contactIds = user.getContacts().stream()
+                .map(User::getId)
+                .collect(Collectors.toList());
+
+        // Ajouter l'user lui-même pour exclusion
+        contactIds.add(userId);
+
+        // Compter le nombre total d'utilisateurs non contacts
+        long totalNonContacts = userRepository.countByIdNotIn(contactIds);
+
+        if (totalNonContacts == 0) {
+            return List.of();
+        }
+
+        // Limiter le count demandé au maximum disponible
+        count = (int) Math.min(count, totalNonContacts);
+
+        // Générer un offset aléatoire
+        Random random = new Random();
+        int randomOffset = random.nextInt((int) totalNonContacts - count + 1);
+
+        // Récupérer les utilisateurs aléatoires
+        return userRepository.findByIdNotIn(
+                contactIds,
+                PageRequest.of(randomOffset / count, count)
+        ).getContent(); // Maintenant getContent() fonctionnera car on retourne une Page
     }
 }
