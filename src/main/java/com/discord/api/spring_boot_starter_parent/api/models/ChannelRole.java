@@ -1,5 +1,7 @@
 package com.discord.api.spring_boot_starter_parent.api.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +18,7 @@ public class ChannelRole {
 
     @ManyToOne
     @JoinColumn(name = "channel_id", referencedColumnName = "id", nullable = false)
+    @JsonIgnore
     private Channel channel;
 
     @ManyToOne
