@@ -37,4 +37,9 @@ public class ChannelService implements IChannelService {
 
         channelRepository.save(channel);
     }
+
+    public List<Message> getAllMessages(Channel channel) 
+    {
+        return channel.getMessages();
+    }
 }
