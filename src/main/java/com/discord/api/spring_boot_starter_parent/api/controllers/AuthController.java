@@ -78,7 +78,13 @@ public class AuthController {
             user.setIsOnline(true);
             userRepository.save(user);
 
-            return ResponseEntity.ok(new AuthenticationResponse(jwt));
+            return ResponseEntity.ok(
+                new AuthenticationResponse(
+                    user.getId(),
+                    user.getUsername(),
+                    jwt
+                )
+            );
         } catch (Exception e) {
             logger.error("Erreur interne du serveur : {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur interne du serveur");
