@@ -21,7 +21,7 @@ import com.discord.api.spring_boot_starter_parent.api.models.Channel;
 import com.discord.api.spring_boot_starter_parent.api.models.Message;
 import com.discord.api.spring_boot_starter_parent.api.request.CreateChannelMessageRequest;
 import com.discord.api.spring_boot_starter_parent.api.services.Channel.ChannelService;
-import com.discord.api.spring_boot_starter_parent.api.services.WebSocket.RawWebSocketHandler;
+import com.discord.api.spring_boot_starter_parent.api.services.WebSocket.ChannelRawWebSocketHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.validation.Valid;
@@ -91,7 +91,7 @@ public class ChannelMessageController {
             ObjectMapper objectMapper = new ObjectMapper();
             String payload = objectMapper.writeValueAsString(savedMessage);
 
-            RawWebSocketHandler.broadcastToChannel(
+            ChannelRawWebSocketHandler.broadcastToChannel(
                 savedMessage.getChannel().getId().toString(),
                 payload
             );
