@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -18,8 +19,13 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    public Optional<User> findById(long userId)
+    {
+        return this.userRepository.findById(userId);
+    }
+
     @Transactional
-    public void addContact(Long userId, String username) {
+    public User addContact(Long userId, String username) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -30,12 +36,17 @@ public class UserService {
             throw new IllegalArgumentException("Cannot add yourself as a contact");
         }
 
-        boolean isAlreadyContact = user.getContacts().stream()
-                .anyMatch(c -> c.getId().equals(contact.getId()));
-        if (!isAlreadyContact) {
-            user.getContacts().add(contact);
-            userRepository.save(user);
+        if (! user.getContacts().contains(contact)) {
+                user.getContacts().add(contact);
+                userRepository.save(user);
         }
+
+        if (! contact.getContacts().contains(user)) {
+                contact.getContacts().add(user);
+                userRepository.save(contact);
+        }
+
+        return contact;
     }
 
     @Transactional(readOnly = true)

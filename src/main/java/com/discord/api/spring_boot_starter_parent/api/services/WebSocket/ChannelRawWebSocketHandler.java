@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @ServerEndpoint("/ws/channel/{channelId}")
 @Component
-public class RawWebSocketHandler {
+public class ChannelRawWebSocketHandler {
 
     // channelId -> sessions
     private static final Map<String, Set<Session>> channelSessions = new ConcurrentHashMap<>();
@@ -20,7 +20,6 @@ public class RawWebSocketHandler {
     @OnOpen
     public void onOpen(Session session, @PathParam("channelId") String channelId) {
         channelSessions.computeIfAbsent(channelId, k -> ConcurrentHashMap.newKeySet()).add(session);
-        System.out.println("✅ Client connecté au channel " + channelId);
     }
 
     @OnClose
@@ -28,13 +27,11 @@ public class RawWebSocketHandler {
         Set<Session> sessions = channelSessions.get(channelId);
         if (sessions != null) {
             sessions.remove(session);
-            System.out.println("⚠️ Client déconnecté du channel " + channelId);
         }
     }
 
     @OnError
     public void onError(Session session, Throwable throwable) {
-        System.err.println("❌ Erreur WebSocket sur session " + session.getId() + ": " + throwable.getMessage());
     }
 
     @OnMessage

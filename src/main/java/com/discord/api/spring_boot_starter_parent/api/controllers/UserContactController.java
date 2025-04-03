@@ -3,11 +3,15 @@ package com.discord.api.spring_boot_starter_parent.api.controllers;
 import com.discord.api.spring_boot_starter_parent.api.models.User;
 import com.discord.api.spring_boot_starter_parent.api.request.CreateContactRequest;
 import com.discord.api.spring_boot_starter_parent.api.services.User.UserService;
+import com.discord.api.spring_boot_starter_parent.api.services.WebSocket.ContactRawWebSocketHandler;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/users/{userId}/contacts")
@@ -23,7 +27,23 @@ public class UserContactController {
             @PathVariable Long userId,
             @RequestBody CreateContactRequest request
     ) {
-        userService.addContact(userId, request.getUsername());
+        var contactUsername = request.getUsername();
+        
+        userService.addContact(userId, contactUsername);
+        Optional<User> user = userService.findById(userId);
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String payload = objectMapper.writeValueAsString(user.get());
+
+            ContactRawWebSocketHandler.broadcastToContactListMainUser(
+                contactUsername,
+                payload
+            );
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();        
+        }
+
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
