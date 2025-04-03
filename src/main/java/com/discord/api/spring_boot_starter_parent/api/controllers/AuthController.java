@@ -5,6 +5,7 @@ import com.discord.api.spring_boot_starter_parent.api.repositories.UserRepositor
 import com.discord.api.spring_boot_starter_parent.api.request.AuthenticationRequest;
 import com.discord.api.spring_boot_starter_parent.api.response.AuthenticationResponse;
 import com.discord.api.spring_boot_starter_parent.api.services.Auth.JwtUtil;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -42,13 +43,25 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody User user) {
-        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+    @Transactional
+    public ResponseEntity<String> register(@RequestBody AuthenticationRequest authenticationRequest) {
+        if (authenticationRequest.getUsername() == null || authenticationRequest.getPassword() == null) {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("Nom d'utilisateur ou mot de passe manquant");
+        }
+        if (userRepository.findByUsername(authenticationRequest.getUsername()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("L'utilisateur existe déjà !");
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setIsOnline(false);
-        userRepository.save(user);
+
+        // Crée un nouvel utilisateur
+        User newUser = new User();
+        newUser.setUsername(authenticationRequest.getUsername());
+        newUser.setPassword(passwordEncoder.encode(authenticationRequest.getPassword()));
+        newUser.setIsOnline(false);
+
+        User savedUser = userRepository.save(newUser);
+
+        userRepository.save(savedUser);
+
         return ResponseEntity.status(HttpStatus.CREATED).body("Utilisateur enregistré avec succès !");
     }
 
