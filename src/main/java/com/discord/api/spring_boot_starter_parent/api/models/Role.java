@@ -19,6 +19,6 @@ public class Role extends Model {
     private String name;
 
     @OneToMany(mappedBy = "role")
-    private List<ChannelRole> channelRoles;
+    private List<ChannelRoleUser> channelRoles;
 
 }

@@ -1,20 +1,22 @@
 package com.discord.api.spring_boot_starter_parent.api.controllers;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import com.discord.api.spring_boot_starter_parent.api.models.User;
+import com.discord.api.spring_boot_starter_parent.api.repositories.UserRepository;
+import com.discord.api.spring_boot_starter_parent.api.services.Auth.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import com.discord.api.spring_boot_starter_parent.api.handlers.ResponseHandler;
 import com.discord.api.spring_boot_starter_parent.api.models.Channel;
-import com.discord.api.spring_boot_starter_parent.api.models.ChannelRole;
+import com.discord.api.spring_boot_starter_parent.api.models.ChannelRoleUser;
 import com.discord.api.spring_boot_starter_parent.api.models.Role;
 import com.discord.api.spring_boot_starter_parent.api.repositories.RoleRepository;
 import com.discord.api.spring_boot_starter_parent.api.request.CreateChannelRequest;
@@ -32,17 +34,37 @@ public class ChannelController {
     private final RoleRepository roleRepository;
     private final IChannelRoleService channelRoleService;
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+    private final UserRepository userRepository;
 
-    public ChannelController(ChannelService channelService, RoleRepository roleRepository, IChannelRoleService channelRoleService) {
+    public ChannelController(ChannelService channelService, RoleRepository roleRepository, IChannelRoleService channelRoleService, UserRepository userRepository) {
         this.channelService = channelService;
         this.roleRepository = roleRepository;
         this.channelRoleService = channelRoleService;
+        this.userRepository = userRepository;
     }
 
     @GetMapping
     public ResponseEntity<Object> index() {
         List<Channel> channels = channelService.findAllChannels();
-        return ResponseHandler.generateResponse(HttpStatus.OK, "channels", channels);
+
+        List<Map<String, Object>> channelResponses = channels.stream().map(channel -> {
+            Map<String, Object> channelResponse = new HashMap<>();
+            channelResponse.put("id", channel.getId());
+            channelResponse.put("name", channel.getName());
+
+            Optional<ChannelRoleUser> creatorRole = channelRoleService.findCreatorByChannelId(channel.getId());
+
+            if (creatorRole.isPresent()) {
+                Map<String, Object> creatorInfo = new HashMap<>();
+                creatorInfo.put("user_id", creatorRole.get().getUser().getId());
+                creatorInfo.put("username", creatorRole.get().getUser().getUsername());
+                channelResponse.put("creator", creatorInfo);
+            }
+
+            return channelResponse;
+        }).collect(Collectors.toList());
+
+        return ResponseHandler.generateResponse(HttpStatus.OK, "channels", channelResponses);
     }
     
     @GetMapping("/{channelId}")
@@ -57,34 +79,28 @@ public class ChannelController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> create(@Valid @RequestBody CreateChannelRequest createChannelRequest) {
-        if (createChannelRequest.getName() == null) {
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("Nom de Channel manquant");
-        }
+    public ResponseEntity<Object> create(
+            @Valid @RequestBody CreateChannelRequest createChannelRequest,
+            @RequestHeader("Authorization") String token
+    ) {
 
-        logger.debug("Tentative de creation de channel : {}", createChannelRequest.getName());
+        String username = JwtUtil.extractUsername(token.replace("Bearer ", ""));
+        User creator = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        try {
-            // Create and save the channel
-            Channel channel = new Channel();
-            channel.setName(createChannelRequest.getName());
-            Channel createdChannel = channelService.save(channel);
+        Channel channel = new Channel();
+        channel.setName(createChannelRequest.getName());
+        Channel createdChannel = channelService.save(channel);
 
-            // Assign role ID 3 to the channel
-            Optional<Role> role = roleRepository.findById(3);
-            if (role.isPresent()) {
-                ChannelRole channelRole = new ChannelRole();
-                channelRole.setChannel(createdChannel);
-                channelRole.setRole(role.get());
-                channelRoleService.save(channelRole);
-            } else {
-                throw new RuntimeException("Role with ID 3 not found");
-            }
+        Role adminRole = roleRepository.findByName("ADMIN")
+                .orElseThrow(() -> new RuntimeException("ADMIN role not found"));
 
-            return ResponseHandler.generateResponse(HttpStatus.CREATED, "channel", createdChannel);
-        } catch (Exception e) {
-            logger.error("Error creating channel: {}", e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        ChannelRoleUser creatorRole = new ChannelRoleUser();
+        creatorRole.setChannel(createdChannel);
+        creatorRole.setRole(adminRole);
+        creatorRole.setUser(creator);
+        channelRoleService.save(creatorRole);
+
+        return ResponseHandler.generateResponse(HttpStatus.CREATED, "channel", createdChannel);
     }
 }

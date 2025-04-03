@@ -8,11 +8,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "channel_roles")
+@Table(name = "channel_roles_users")
 @Getter
 @Setter
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class ChannelRole {
+public class ChannelRoleUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -25,4 +25,8 @@ public class ChannelRole {
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }
