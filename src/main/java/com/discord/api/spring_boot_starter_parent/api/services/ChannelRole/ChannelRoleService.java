@@ -36,4 +36,10 @@ public class ChannelRoleService implements IChannelRoleService {
     public void deleteById(Integer channelRoleId) {
         channelRoleRepository.deleteById(channelRoleId);
     }
+
+    @Override
+    public Optional<ChannelRoleUser> findCreatorByChannelId(Integer channelId) {
+        // Trouver le premier ADMIN du channel (normalement le créateur)
+        return channelRoleRepository.findFirstByChannelIdAndRoleName(channelId, "ADMIN");
+    }
 }

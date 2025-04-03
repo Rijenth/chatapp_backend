@@ -10,4 +10,6 @@ public interface IChannelRoleService {
     Optional<ChannelRoleUser> findChannelRoleById(Integer channelRoleId);
     ChannelRoleUser save(ChannelRoleUser channelRole);
     void deleteById(Integer channelRoleId);
+
+    Optional<ChannelRoleUser> findCreatorByChannelId(Integer channelId);
 }

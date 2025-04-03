@@ -1,7 +1,10 @@
 package com.discord.api.spring_boot_starter_parent.api.controllers;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.discord.api.spring_boot_starter_parent.api.models.User;
 import com.discord.api.spring_boot_starter_parent.api.repositories.UserRepository;
@@ -43,7 +46,25 @@ public class ChannelController {
     @GetMapping
     public ResponseEntity<Object> index() {
         List<Channel> channels = channelService.findAllChannels();
-        return ResponseHandler.generateResponse(HttpStatus.OK, "channels", channels);
+
+        List<Map<String, Object>> channelResponses = channels.stream().map(channel -> {
+            Map<String, Object> channelResponse = new HashMap<>();
+            channelResponse.put("id", channel.getId());
+            channelResponse.put("name", channel.getName());
+
+            Optional<ChannelRoleUser> creatorRole = channelRoleService.findCreatorByChannelId(channel.getId());
+
+            if (creatorRole.isPresent()) {
+                Map<String, Object> creatorInfo = new HashMap<>();
+                creatorInfo.put("user_id", creatorRole.get().getUser().getId());
+                creatorInfo.put("username", creatorRole.get().getUser().getUsername());
+                channelResponse.put("creator", creatorInfo);
+            }
+
+            return channelResponse;
+        }).collect(Collectors.toList());
+
+        return ResponseHandler.generateResponse(HttpStatus.OK, "channels", channelResponses);
     }
     
     @GetMapping("/{channelId}")
