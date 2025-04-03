@@ -14,11 +14,12 @@ import com.discord.api.spring_boot_starter_parent.api.repositories.ChannelReposi
 public class ChannelService implements IChannelService {
 
     private final MessageRepository messageRepository;
-    @Autowired
-    private ChannelRepository channelRepository;
 
-    ChannelService(MessageRepository messageRepository) {
+    private final ChannelRepository channelRepository;
+
+    ChannelService(MessageRepository messageRepository, ChannelRepository channelRepository) {
         this.messageRepository = messageRepository;
+        this.channelRepository = channelRepository;
     }
 
     @Override

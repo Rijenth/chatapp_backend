@@ -3,30 +3,32 @@ package com.discord.api.spring_boot_starter_parent.api.services.ChannelRole;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.discord.api.spring_boot_starter_parent.api.models.ChannelRole;
+import com.discord.api.spring_boot_starter_parent.api.models.ChannelRoleUser;
 import com.discord.api.spring_boot_starter_parent.api.repositories.ChannelRoleRepository;
 
 @Service
 public class ChannelRoleService implements IChannelRoleService {
 
-    @Autowired
-    private ChannelRoleRepository channelRoleRepository;
+    private final ChannelRoleRepository channelRoleRepository;
+
+    public ChannelRoleService(ChannelRoleRepository channelRoleRepository) {
+        this.channelRoleRepository = channelRoleRepository;
+    }
 
     @Override
-    public List<ChannelRole> findAllChannelRoles() {
+    public List<ChannelRoleUser> findAllChannelRoles() {
         return channelRoleRepository.findAll();
     }
 
     @Override
-    public Optional<ChannelRole> findChannelRoleById(Integer channelRoleId) {
+    public Optional<ChannelRoleUser> findChannelRoleById(Integer channelRoleId) {
         return channelRoleRepository.findById(channelRoleId);
     }
 
     @Override
-    public ChannelRole save(ChannelRole channelRole) {
+    public ChannelRoleUser save(ChannelRoleUser channelRole) {
         return channelRoleRepository.save(channelRole);
     }
 

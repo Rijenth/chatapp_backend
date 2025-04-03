@@ -3,11 +3,11 @@ package com.discord.api.spring_boot_starter_parent.api.services.ChannelRole;
 import java.util.List;
 import java.util.Optional;
 
-import com.discord.api.spring_boot_starter_parent.api.models.ChannelRole;
+import com.discord.api.spring_boot_starter_parent.api.models.ChannelRoleUser;
 
 public interface IChannelRoleService {
-    List<ChannelRole> findAllChannelRoles();
-    Optional<ChannelRole> findChannelRoleById(Integer channelRoleId);
-    ChannelRole save(ChannelRole channelRole);
+    List<ChannelRoleUser> findAllChannelRoles();
+    Optional<ChannelRoleUser> findChannelRoleById(Integer channelRoleId);
+    ChannelRoleUser save(ChannelRoleUser channelRole);
     void deleteById(Integer channelRoleId);
 }
