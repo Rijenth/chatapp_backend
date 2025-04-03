@@ -76,7 +76,21 @@ public class UserContactController {
             @PathVariable Long contactId
     ) {
         try {
-            userService.removeContact(userId, contactId);
+            User contact = userService.removeContact(userId, contactId);
+            Optional<User> user = userService.findById(userId);
+
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                String payload = objectMapper.writeValueAsString(user.get());
+    
+                ContactRawWebSocketHandler.broadcastToContactListMainUser(
+                    contact.getUsername(),
+                    payload
+                );
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();        
+            }
+
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

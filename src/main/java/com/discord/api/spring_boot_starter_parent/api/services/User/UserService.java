@@ -67,14 +67,18 @@ public class UserService {
     }
 
     @Transactional
-    public void removeContact(Long userId, Long contactId) {
+    public User removeContact(Long userId, Long contactId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        userRepository.findById(contactId)
+        User contact = userRepository.findById(contactId)
                 .orElseThrow(() -> new RuntimeException("Contact not found"));
 
         user.getContacts().removeIf(c -> c.getId().equals(contactId));
+        contact.getContacts().removeIf(c -> c.getId().equals(userId));
         userRepository.save(user);
+        userRepository.save(contact);
+
+        return contact;
     }
 
     public List<User> getRandomNonContacts(Long userId, int count) {
