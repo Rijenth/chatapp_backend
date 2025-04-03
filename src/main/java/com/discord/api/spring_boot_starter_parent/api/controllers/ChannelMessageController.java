@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.discord.api.spring_boot_starter_parent.api.handlers.ResponseHandler;
@@ -22,6 +21,8 @@ import com.discord.api.spring_boot_starter_parent.api.models.Channel;
 import com.discord.api.spring_boot_starter_parent.api.models.Message;
 import com.discord.api.spring_boot_starter_parent.api.request.CreateChannelMessageRequest;
 import com.discord.api.spring_boot_starter_parent.api.services.Channel.ChannelService;
+import com.discord.api.spring_boot_starter_parent.api.services.WebSocket.RawWebSocketHandler;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.validation.Valid;
 
@@ -85,6 +86,18 @@ public class ChannelMessageController {
         newMessage.setChannel(foundChannel);
 
         Message savedMessage = channelService.saveMessage(newMessage);
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String payload = objectMapper.writeValueAsString(savedMessage);
+
+            RawWebSocketHandler.broadcastToChannel(
+                savedMessage.getChannel().getId().toString(),
+                payload
+            );
+        } catch (Exception e) {
+            return ResponseHandler.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, null, e.getMessage());
+        }
 
         return ResponseHandler.generateResponse(HttpStatus.CREATED, "message", savedMessage);
     }
