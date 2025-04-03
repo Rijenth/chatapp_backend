@@ -6,6 +6,8 @@ import lombok.Setter;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Getter
 @Setter
 @Entity
@@ -19,6 +21,7 @@ public class Role extends Model {
     private String name;
 
     @OneToMany(mappedBy = "role")
+    @JsonIgnore
     private List<ChannelRoleUser> channelRoles;
 
 }
