@@ -9,6 +9,7 @@ DELETE FROM channels;
 DELETE FROM users_roles;
 DELETE FROM users;
 DELETE FROM roles WHERE name = 'USER';
+DELETE FROM channel_roles_users;
 
 -- Insertion du rôle USER s'il n'existe pas
 INSERT INTO roles (name) VALUES ('USER');
@@ -107,3 +108,37 @@ INSERT INTO messages (content, channel_id, created_at, user_id, username) VALUES
 
 -- Insertion des autres roles
 INSERT INTO roles (name) VALUES ('MODERATOR'), ('ADMIN');
+
+-- ASSIGNATION DES ADMINS AUX CHANNELS
+-- Récupérez l'ID du rôle ADMIN
+SET @admin_role_id = (SELECT id FROM roles WHERE name = 'ADMIN');
+
+-- Assignez chaque utilisateur comme ADMIN d'un channel
+INSERT INTO channel_roles_users (channel_id, role_id, user_id)
+VALUES
+    (1, @admin_role_id, (SELECT id FROM users WHERE username = 'demoUser')),
+    (2, @admin_role_id, (SELECT id FROM users WHERE username = 'use001')),
+    (3, @admin_role_id, (SELECT id FROM users WHERE username = 'use002')),
+    (4, @admin_role_id, (SELECT id FROM users WHERE username = 'use003')),
+    (5, @admin_role_id, (SELECT id FROM users WHERE username = 'use004'));
+
+-- Optionnel : Assignez le rôle USER aux autres utilisateurs pour chaque channel
+-- (si vous voulez qu'ils aient accès à tous les channels)
+SET @user_role_id = (SELECT id FROM roles WHERE name = 'USER');
+
+-- Pour chaque channel, assignez le rôle USER à tous les utilisateurs sauf l'admin
+INSERT INTO channel_roles_users (channel_id, role_id, user_id)
+SELECT
+    c.id,
+    @user_role_id,
+    u.id
+FROM
+    channels c
+        CROSS JOIN
+    users u
+WHERE
+    u.id NOT IN (
+        SELECT cru.user_id
+        FROM channel_roles_users cru
+        WHERE cru.channel_id = c.id AND cru.role_id = @admin_role_id
+    );
