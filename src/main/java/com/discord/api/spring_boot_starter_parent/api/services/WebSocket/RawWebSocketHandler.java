@@ -47,8 +47,6 @@ public class RawWebSocketHandler {
 
         if (sessions != null) {
             for (Session session : sessions) {
-                System.out.println("broadcasting to :" + session);
-
                 try {
                     session.getBasicRemote().sendText(message);
                 } catch (IOException e) {
