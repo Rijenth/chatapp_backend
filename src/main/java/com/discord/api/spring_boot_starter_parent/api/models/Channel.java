@@ -28,6 +28,6 @@ public class Channel extends Model {
 
     @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<ChannelRole> channelRoles;
+    private List<ChannelRoleUser> channelRoles;
 
 }
